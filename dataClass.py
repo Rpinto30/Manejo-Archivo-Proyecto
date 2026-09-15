@@ -10,9 +10,9 @@ class Settings:
                  foreground,
                  photo):
         self.user_name = user_name
-        self.theme = theme
-        self.lenguague = lenguague
-        self.font_size = font_size
+        self.theme = theme if theme == 0 or theme == 1 else 0
+        self.lenguague = lenguague if lenguague == 'en' or lenguague == 'es' else 'en'
+        self.font_size = font_size if 1 <= font_size <= 72 else  15
         self.menu_color = menu_color
         self.foreground = foreground
         self.photo = photo
