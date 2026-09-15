@@ -1,0 +1,1 @@
+load_lenguagues: pyside6-lrelease translations/app_en.ts -qm transtlations/app_en.qm
