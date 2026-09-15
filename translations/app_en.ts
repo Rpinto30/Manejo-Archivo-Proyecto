@@ -30,6 +30,7 @@
     <message><source>Opciones de Memorias</source><translation>Memories Settings</translation></message>
     <message><source>Cargar</source><translation>Load</translation></message>
     <message><source>Sin datos que cargar...</source><translation>No data to load...</translation></message>
+    <message><source>Color de fondo</source><translation>Background Color</translation></message>
     <message><source></source><translation></translation></message>
 </context>
 </TS>

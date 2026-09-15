@@ -2,7 +2,7 @@ import sys
 from PySide6.QtWidgets import (
     QApplication, QWidget, QDialog, QVBoxLayout, QHBoxLayout, 
     QLabel, QTextEdit, QComboBox, QSpinBox, QPushButton, 
-    QColorDialog, QFormLayout
+    QColorDialog, QFormLayout, QMessageBox
 )
 from PySide6.QtGui import QColor, QFont
 
@@ -126,5 +126,71 @@ class FormularioFuente(DialogoFormularioBase):
         return {
             "tamano": self.spin_tamano.value(),
             "color_hex": self.color_seleccionado.name(),
+            "color_qcolor": self.color_seleccionado
+        }
+
+
+class FormularioFondo(DialogoFormularioBase):
+    hex_color = ''
+    def __init__(self, parent=None, color='#000000'):
+        super().__init__("Configuración de Fuente", parent)
+        self.color_seleccionado = QColor(color)
+        self.hex_color = color
+        self.btn_color = QPushButton("Elegir nuevo color", self)
+        self.btn_color.clicked.connect(self._seleccionar_color)
+        self._actualizar_estilo_boton_color()
+
+        form_layout = QFormLayout()
+        form_layout.addRow("Color:", self.btn_color)
+        
+        v = QHBoxLayout()
+        v.setContentsMargins(0,0,0, 20)
+        self.btn_light = QPushButton("Fondo Claro", self)
+        self.btn_light.clicked.connect(
+            lambda: self._actualizar_( '#F5F5F5')
+        )
+        self.btn_light.setStyleSheet(self.btn_light.styleSheet() + """
+        background-color: #F5F5F5;
+        color: black; 
+        """)
+        
+        self.btn_black =  QPushButton("Fondo Oscuro", self)
+        self.btn_black.setStyleSheet(self.btn_black.styleSheet() + """
+        background-color: #1F1F1F;
+        color: white;
+        """)
+        self.btn_black.clicked.connect(
+                    lambda: self._actualizar_( '#1F1F1F')
+        )
+        
+        v.addWidget(self.btn_light)
+        v.addWidget(self.btn_black)
+        
+        self.layout_contenido.addLayout(form_layout)
+        self.layout_contenido.addLayout(v)
+
+    def _seleccionar_color(self):
+        color = QColorDialog.getColor(self.color_seleccionado, self, "Selecciona el color de la fuente")
+        if color.isValid():
+            self.color_seleccionado = color
+            self._actualizar_estilo_boton_color()
+            #QMessageBox.information(self, 'Color de fondo', 'El color de fondo fue agregado con exito!')
+
+
+    def _actualizar_estilo_boton_color(self):
+        self.hex_color = self.color_seleccionado.name()
+        self.btn_color.setStyleSheet(f"background-color: {self.hex_color}; color: {'white' if self.color_seleccionado.lightness() < 128 else 'black'};")
+
+    def _actualizar_(self, color):
+        self.hex_color = color
+        if color == '#1F1F1F':
+            self.btn_color.setStyleSheet(f"background-color: {self.hex_color}; color: white;")
+        else:
+            self.btn_color.setStyleSheet(f"background-color: {self.hex_color}; color: black;")
+        #QMessageBox.information(self, 'Color de fondo', 'El color de fondo fue agregado con exito!')
+
+    def obtener_resultado(self) -> dict:
+        return {
+            "color_hex": self.hex_color,
             "color_qcolor": self.color_seleccionado
         }

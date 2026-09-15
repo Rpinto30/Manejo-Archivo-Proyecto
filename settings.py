@@ -69,7 +69,6 @@ def save(settings: Settings):
                 indent=4)
             #print(settings.setJson())
             
-        #sin errores al guardar
         if os.path.exists(SETTINGS_PATH_TEMP):
             with open(SETTINGS_PATH_TEMP, "r", encoding="utf-8") as old_file:
                 old = json.load(old_file)
@@ -81,4 +80,18 @@ def save(settings: Settings):
         if os.path.exists(SETTINGS_PATH_TEMP):
             os.rename(SETTINGS_PATH_TEMP, SETTINGS_PATH)
     except:
-        print("err")
+        with open(SETTINGS_PATH_TEMP, 'w', encoding='utf-8') as file:
+            json.dump(
+                Settings(
+                        "N/A",
+                        0,
+                        "es",
+                        15,
+                        "#F5F5F5",
+                        "#242424",
+                        ""
+                    ).setJson(), 
+                file,
+                indent=4)
+        if os.path.exists(SETTINGS_PATH_TEMP):
+            os.rename(SETTINGS_PATH_TEMP, SETTINGS_PATH)

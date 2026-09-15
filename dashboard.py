@@ -1,6 +1,6 @@
 from dataClass import Settings, Memories
 from settings import load, save
-from dialogs import FormularioFuente, FormularioLenguaje, FormularioTema, FormularioUsuario
+from dialogs import FormularioFuente, FormularioLenguaje, FormularioTema, FormularioUsuario, FormularioFondo
 
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
@@ -20,8 +20,8 @@ class DashBoard(QMainWindow):
     settings = None
     memories = Memories()
     
-    menu_color_light = "#F5F5F5"
-    menu_color_dark = "#1F1F1F"
+    menu_color_light =  "#F5F5F5" 
+    menu_color_dark = "#1F1F1F" 
     index_page = 1
     
     foreground = ""
@@ -33,7 +33,7 @@ class DashBoard(QMainWindow):
         font_size = settings.font_size if (settings and settings.font_size) else 13
         return f"""
     QMainWindow {{
-        background-color: {menu_color_light};
+        background-color: {menu_color_light if settings.menu_color == "#F5F5F5" else settings.menu_color};
     }}
  
     QLabel {{
@@ -198,7 +198,7 @@ QPushButton#btnPrev:disabled, QPushButton#btnNext:disabled {{
         return f"""
     /* Estilo base de la ventana */
     QMainWindow {{
-        background-color: {menu_color_dark};
+        background-color: {menu_color_dark if settings.menu_color == "#1F1F1F" else settings.menu_color};
     }}
  
     /* Menú Superior y Dropdowns */
@@ -443,6 +443,19 @@ QPushButton#btnPrev:disabled, QPushButton#btnNext:disabled {{
                 self.setStyleSheet(self.get_dark_stylesheet())
             save(self.settings)
     
+    def sol_background(self):
+        dialog = FormularioFondo(self, self.settings.menu_color)
+        #dialog.setStyleSheet(f"font-size: 14px; color: white; background-color: #202020")
+        
+        if dialog.exec() ==  QDialog.DialogCode.Accepted:
+            r = dialog.obtener_resultado()
+            self.settings.menu_color = r['color_hex']
+            if self.settings.theme == 1:
+                self.setStyleSheet(self.get_light_stylesheet())
+            else: 
+                self.setStyleSheet(self.get_dark_stylesheet())
+            save(self.settings)
+    
     def sol_image(self):
         path, _ = QFileDialog.getOpenFileName(
             self,
@@ -636,6 +649,12 @@ QPushButton#btnPrev:disabled, QPushButton#btnNext:disabled {{
             self.sol_image
         )
         
+        self.actionBackground = QAction(MainWindow)
+        self.actionBackground.setObjectName(u"actionBackground")
+        self.actionBackground.triggered.connect(
+            self.sol_background
+        )
+        
         
         #---------------------CENTRAL---------------------
         icon9 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AddressBookNew))
@@ -821,6 +840,7 @@ QPushButton#btnPrev:disabled, QPushButton#btnNext:disabled {{
         self.menuConfiguraci_n.addAction(self.actionBarra)
         self.menuConfiguraci_n.addSeparator()
         self.menuConfiguraci_n.addAction(self.actionColor_de_letra)
+        self.menuConfiguraci_n.addAction(self.actionBackground)
         self.retranslateUi(MainWindow)
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
@@ -843,6 +863,7 @@ QPushButton#btnPrev:disabled, QPushButton#btnNext:disabled {{
         self.actionBarra.setText(QCoreApplication.translate("MainWindow", u"Barra lateral", None))
         self.actionColor_de_letra.setText(QCoreApplication.translate("MainWindow", u"Opciones de letra", None))
         self.actionFoto_de_perfil.setText(QCoreApplication.translate("MainWindow", u"Foto de perfil", None))
+        self.actionBackground.setText(QCoreApplication.translate("MainWindow", u"Color de fondo", None))
         #self.actionMostrar_Ocultar_Panel.setText(QCoreApplication.translate("MainWindow", u"Mostrar/Ocultar panel lateral", None))
         #self.image.setText(QCoreApplication.translate("MainWindow", u"Inserta una imagen...", None))
         self.optionsLabel.setText(QCoreApplication.translate("MainWindow", u"Opciones Memorias", None))
